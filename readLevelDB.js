@@ -3,13 +3,29 @@ const rlp = require('rlp')
 const ethUtil = require('ethereumjs-util')
 const BN = ethUtil.BN
 
+
 const bufBE8 = n => n.toArrayLike(Buffer, 'be', 8)
+const preimageKey = (hash) => Buffer.concat([Buffer.from('secure-key-'),  hash])
 const bodyKey = (n, hash) => Buffer.concat([Buffer.from('b'), bufBE8(n), hash])
 const headerKey = (n, hash) => Buffer.concat([Buffer.from('h'), bufBE8(n), hash])
 const recptKey = (n, hash) => Buffer.concat([Buffer.from('r'), bufBE8(n), hash])
 
 function ReadLevelDB(path){
       this.db=level(path)
+}
+
+ReadLevelDB.prototype.getPreimage=function(hash,cb){
+
+  this.db.get(preimageKey(ethUtil.toBuffer(hash)),{
+      keyEncoding: 'binary',
+      valueEncoding: 'binary'
+    }, function (err, value) {
+      cb(err,value)
+      
+    })
+
+
+
 }
 
 
